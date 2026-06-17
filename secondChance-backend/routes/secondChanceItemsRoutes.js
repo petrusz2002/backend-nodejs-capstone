@@ -17,8 +17,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage })
 
-
-// Get all items
 router.get('/', async (req, res, next) => {
   logger.info('/ called')
 
@@ -35,14 +33,12 @@ router.get('/', async (req, res, next) => {
   }
 })
 
-
-// Add item
 router.post('/', upload.single('file'), async (req, res, next) => {
   try {
     const db = await connectToDatabase()
     const collection = db.collection('secondChanceItems')
 
-    let secondChanceItem = req.body
+    const secondChanceItem = req.body
 
     const lastItemQuery = await collection
       .find()
@@ -53,8 +49,9 @@ router.post('/', upload.single('file'), async (req, res, next) => {
       secondChanceItem.id = (parseInt(item.id) + 1).toString()
     })
 
-    secondChanceItem.date_added =
-      Math.floor(new Date().getTime() / 1000)
+    secondChanceItem.date_added = Math.floor(
+      new Date().getTime() / 1000
+    )
 
     if (req.file) {
       secondChanceItem.image = '/images/' + req.file.filename
@@ -68,16 +65,14 @@ router.post('/', upload.single('file'), async (req, res, next) => {
   }
 })
 
-
-// Get item by id
 router.get('/:id', async (req, res, next) => {
   try {
     const db = await connectToDatabase()
     const collection = db.collection('secondChanceItems')
 
-    const id = req.params.id
-
-    const secondChanceItem = await collection.findOne({ id })
+    const secondChanceItem = await collection.findOne({
+      id: req.params.id
+    })
 
     if (!secondChanceItem) {
       return res.status(404).send('secondChanceItem not found')
@@ -89,8 +84,6 @@ router.get('/:id', async (req, res, next) => {
   }
 })
 
-
-// Update item
 router.put('/:id', async (req, res, next) => {
   try {
     const db = await connectToDatabase()
@@ -101,8 +94,6 @@ router.put('/:id', async (req, res, next) => {
     const secondChanceItem = await collection.findOne({ id })
 
     if (!secondChanceItem) {
-      logger.error('secondChanceItem not found')
-
       return res.status(404).json({
         error: 'secondChanceItem not found'
       })
@@ -113,8 +104,9 @@ router.put('/:id', async (req, res, next) => {
     secondChanceItem.age_days = req.body.age_days
     secondChanceItem.description = req.body.description
 
-    secondChanceItem.age_years =
-      Number((secondChanceItem.age_days / 365).toFixed(1))
+    secondChanceItem.age_years = Number(
+      (secondChanceItem.age_days / 365).toFixed(1)
+    )
 
     secondChanceItem.updatedAt = new Date()
 
@@ -142,8 +134,6 @@ router.put('/:id', async (req, res, next) => {
   }
 })
 
-
-// Delete item
 router.delete('/:id', async (req, res, next) => {
   try {
     const db = await connectToDatabase()
@@ -168,6 +158,5 @@ router.delete('/:id', async (req, res, next) => {
     next(e)
   }
 })
-
 
 module.exports = router
