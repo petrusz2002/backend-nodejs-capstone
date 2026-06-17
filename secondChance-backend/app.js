@@ -14,16 +14,13 @@ app.use('*', cors())
 
 const port = 3060
 
-
 // Connect to MongoDB
 connectToDatabase().then(() => {
   pinoLogger.info('Connected to DB')
 })
   .catch((e) => console.error('Failed to connect to DB', e))
 
-
 app.use(express.json())
-
 
 // Route files
 const secondChanceRoutes = require('./routes/secondChanceItemsRoutes')
@@ -46,18 +43,15 @@ app.use('/api/auth', authRoutes)
 
 app.use('/api/secondchance/search', searchRoutes)
 
-
 // Global Error Handler
 app.use((err, req, res, next) => {
   console.error(err)
   res.status(500).send('Internal Server Error')
 })
 
-
 app.get('/', (req, res) => {
   res.send('Inside the server')
 })
-
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`)
