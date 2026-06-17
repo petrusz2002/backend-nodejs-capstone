@@ -15,7 +15,7 @@ const data = JSON.parse(
   fs.readFileSync(filename, 'utf8')
 ).docs
 
-async function loadData() {
+async function loadData () {
   const client = new MongoClient(url)
 
   try {
